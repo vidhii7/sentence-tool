@@ -1,6 +1,10 @@
+
 import React from "react";
+import { useGame } from "@/contexts/GameContext";
 
 export const ActionButtons: React.FC = () => {
+  const { startGame } = useGame();
+
   return (
     <div className="flex items-center gap-4 text-base font-medium whitespace-nowrap text-center tracking-[-0.16px] leading-none mt-16 max-md:mt-10">
       <button
@@ -11,7 +15,7 @@ export const ActionButtons: React.FC = () => {
       </button>
       <button
         className="self-stretch bg-[#453FE1] min-h-[42px] gap-2 text-white w-[140px] my-auto px-6 py-2.5 rounded-lg max-md:px-5 hover:bg-[#453FE1]/90 transition-colors"
-        onClick={() => console.log("Start clicked")}
+        onClick={startGame}
       >
         Start
       </button>
