@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +10,16 @@ export interface Question {
   correctAnswer: string[];
 }
 
+export interface Activity {
+  id: string;
+  userId: string;
+  type: string;
+  coinType: string;
+  coins: number;
+  description: string;
+  createdAt: string;
+}
+
 export interface GameData {
   status: string;
   data: {
@@ -18,6 +27,7 @@ export interface GameData {
     questions: Question[];
   };
   message: string;
+  activity?: Activity;
 }
 
 interface GameContextType {
@@ -59,12 +69,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [timerId, setTimerId] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  // Fetch questions
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        // In a real application, this would be an API call
-        // For this example, we're using the sample data
         const sampleData: GameData = {
           "status": "SUCCESS",
           "data": {
@@ -165,9 +172,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
 
         setQuestions(sampleData.data.questions);
-        // Initialize userAnswers with empty arrays for each question
         const initialUserAnswers = sampleData.data.questions.map(q => {
-          // Count blanks in the question
           const blankCount = (q.question.match(/____________/g) || []).length;
           return Array(blankCount).fill(null);
         });
@@ -182,18 +187,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchQuestions();
   }, []);
 
-  // Timer logic
   useEffect(() => {
     if (isGameStarted && !isGameFinished && timeLeft > 0) {
       const timer = window.setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            // Time's up, move to next question
             if (currentQuestionIndex < questions.length - 1) {
               setCurrentQuestionIndex(currentQuestionIndex + 1);
-              return 30; // Reset timer for next question
+              return 30;
             } else {
-              // End game if all questions are done
               setIsGameFinished(true);
               navigate("/results");
               clearInterval(timer);
@@ -210,7 +212,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [isGameStarted, isGameFinished, timeLeft, currentQuestionIndex, questions.length, navigate]);
 
-  // Reset timer when question changes
   useEffect(() => {
     if (isGameStarted) {
       setTimeLeft(30);
@@ -230,7 +231,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentQuestionIndex(0);
     setTimeLeft(30);
     setSelectedBlankIndex(null);
-    // Reset user answers
     const resetAnswers = questions.map(q => {
       const blankCount = (q.question.match(/____________/g) || []).length;
       return Array(blankCount).fill(null);
