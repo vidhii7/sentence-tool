@@ -2,9 +2,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Frown, Smile } from "lucide-react";
 
 export const ResultsScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ export const ResultsScreen: React.FC = () => {
 
   const score = calculateScore();
   const percentage = Math.round((score / questions.length) * 100);
+  const isGoodScore = percentage >= 50;
 
   const handleTryAgain = () => {
     resetGame();
@@ -60,29 +61,47 @@ export const ResultsScreen: React.FC = () => {
         </div>
         
         <div className="score-container text-center mb-12">
-          <div className="relative inline-block">
-            <div className="w-32 h-32 rounded-full border-8 border-[#453FE1]/10 flex items-center justify-center">
-              <div className="text-center">
-                <span className="text-4xl font-bold text-[#453FE1]">{percentage}</span>
-                <span className="text-xl text-[#453FE1]">%</span>
+          <div className="flex flex-col items-center">
+            <div className="relative inline-block">
+              <div className="w-32 h-32 rounded-full border-8 border-[#453FE1]/10 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-4xl font-bold text-[#453FE1]">{percentage}</span>
+                  <span className="text-xl text-[#453FE1]">%</span>
+                </div>
+              </div>
+              <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-8 h-8 flex items-center justify-center">
+                {score}/{questions.length}
               </div>
             </div>
-            <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-8 h-8 flex items-center justify-center">
-              {score}/{questions.length}
+            
+            <div className="mt-4 animate-bounce">
+              {isGoodScore ? (
+                <Smile 
+                  size={50} 
+                  className="text-green-500" 
+                  strokeWidth={1.5}
+                />
+              ) : (
+                <Frown 
+                  size={50} 
+                  className="text-red-500" 
+                  strokeWidth={1.5}
+                />
+              )}
             </div>
+            
+            <p className="text-gray-600 mt-4 text-sm">
+              You've correctly ordered words in {score} out of {questions.length} sentences.
+              Check the detailed results for each question below.
+            </p>
+            
+            <Button 
+              className="mt-6 bg-[#453FE1] text-white w-40 py-2.5 rounded-lg hover:bg-[#453FE1]/90 transition-colors"
+              onClick={handleTryAgain}
+            >
+              Try Again
+            </Button>
           </div>
-          
-          <p className="text-gray-600 mt-4 text-sm">
-            You've correctly ordered words in {score} out of {questions.length} sentences.
-            Check the detailed results for each question below.
-          </p>
-          
-          <Button 
-            className="mt-6 bg-[#453FE1] text-white w-40 py-2.5 rounded-lg hover:bg-[#453FE1]/90 transition-colors"
-            onClick={handleTryAgain}
-          >
-            Try Again
-          </Button>
         </div>
         
         <div className="results-details">
